@@ -1,0 +1,33 @@
+[package]
+name = "shape-contour"
+version = "0.2.0" # change with html_root_url in lib.rs
+edition = "2021"
+authors = ["nomissbowling <nomissbowling@yahoo.co.jp>"]
+
+description = "Rust crate shape-contour supports ESRI J shapefile (C bindings)"
+keywords = ["shape", "contour", "geo", "science", "2D"]
+categories = ["graphics", "science", "science::geo", "external-ffi-bindings"]
+license = "MIT"
+
+documentation = "https://docs.rs/shape-contour/"
+homepage = "https://crates.io/crates/shape-contour"
+repository = "https://github.com/nomissbowling/shape-contour"
+
+readme = "README.md"
+
+#build = "build.rs"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+name = "shape_contour"
+
+[dependencies]
+shapelib-rs = { version = "0.2" }
+
+[build-dependencies]
+cc = "1.0.79"
+bindgen = "0.65.1"
+
+[package.metadata.docs.rs]
+rustc-args = ["--cfg", "docsrs"]
