@@ -57,7 +57,9 @@ pub fn get_mm_of_contours(contours: &shape::Contours2d) -> Vec<shape::Pt2d> {
 /// Pt
 #[derive(Debug)]
 pub struct Pt {
+  /// x
   pub x: i32,
+  /// y
   pub y: i32
 }
 
@@ -144,6 +146,9 @@ impl GrpContoursInf {
 */
 /*
 all prefectures range=(maxBound - minBound)(Points)
+(  32   24) scale    1.0 range(  31.0528,  21.5116) offset( 122.9339,  24.0456)
+( 640  480) scale   20.0 range( 621.0552, 430.2325) offset(2458.6783, 480.9123)
+(1280  960) scale   40.0 range(1242.1105, 860.4649) offset(4917.3565, 961.8246)
 (1600 1200) scale   50.0 range(1552.6381,1075.5812) offset(6146.6957,1202.2808)
 shapeId=1204
 (x) scale17907.4 range(1552.6381, 648.8804) offset(2431661.2717,623000.3392)
@@ -173,8 +178,8 @@ shapeId=1204
   pub fn get_all_scaled(&mut self) -> Result<i32, Box<dyn Error>> {
     let mut total = 0i32;
     let offset = shape::Pt2d{x: 0.0, y: 0.0};
-    for si in 0..self.grp_contours.len() as i32 {
-      total += self.get_scaled_contours(si, &offset)?;
+    for i in 0..self.grp_contours.len() { // borrow '&si in &self.grp_contours'
+      total += self.get_scaled_contours(self.grp_contours[i], &offset)?;
     }
     Ok(total)
   }

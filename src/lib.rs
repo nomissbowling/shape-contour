@@ -1,4 +1,4 @@
-#![doc(html_root_url = "https://docs.rs/shape-contour/0.2.0")]
+#![doc(html_root_url = "https://docs.rs/shape-contour/0.2.1")]
 //! Rust crate shape-contour supports ESRI J shapefile (C bindings)
 //!
 //! # Requirements
