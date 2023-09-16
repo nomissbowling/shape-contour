@@ -104,12 +104,12 @@ impl GrpContoursInf {
   }
 
   /// get_grp_contours
-  pub fn get_grp_contours(&mut self, w_pref: i32, w_city: i32) ->
-    Result<(), Box<dyn Error>> {
+  pub fn get_grp_contours(&mut self, scale: f64, w_pref: i32, w_city: i32,
+    ignore: bool) -> Result<(), Box<dyn Error>> {
     for si in 0..self.sci.shp.len() as i32 {
       let flds = &self.sci.rec[&si];
       let (pref, city) = match shape::get_pref_city(flds[0].as_str()) {
-      Err(e) => { println!("{} at {}\x07", e, si); (0, 0) },
+      Err(e) => { if !ignore { println!("{} at {}\x07", e, si) }; (0, 0) },
       Ok(r) => r
       };
 /*
@@ -137,7 +137,7 @@ impl GrpContoursInf {
     self.offset = shape::Pt2d{x: self.mm[0].x, y: self.mm[0].y};
     let xscale = (self.sci.minmax[1][0] - self.sci.minmax[0][0]) / range.x;
     let yscale = (self.sci.minmax[1][1] - self.sci.minmax[0][1]) / range.y;
-    self.scale = 50.0f64 * (if xscale < yscale { xscale } else { yscale });
+    self.scale = scale * (if xscale < yscale { xscale } else { yscale });
 /*
     print!("({:4} {:4}) scale{:7.1}", 1600, 1200, self.scale);
     println!(" range({:9.4},{:9.4}) offset({:9.4},{:9.4})",
@@ -159,23 +159,24 @@ shapeId=1204
   /// get_scaled_contours
   pub fn get_scaled_contours(&mut self, si: i32, ofs: &shape::Pt2d) ->
     Result<i32, Box<dyn Error>> {
-    let mut contours = self.grp_scaled_contours.entry(si).or_insert_with(|| {
-      Vec::<Contour2>::with_capacity(self.sci.shp[&si].len())
-    });
-    for pts in &self.sci.shp[&si] {
-      let mut contour = Vec::<Pt>::with_capacity(pts.len());
-      for p in pts {
-        contour.push(Pt{ // add offset before scale
-          x: ((ofs.x + p.x) * self.scale) as i32,
-          y: ((ofs.y + p.y) * self.scale) as i32});
+    let contours = self.grp_scaled_contours.entry(si).or_insert_with(|| {
+      let mut cts = Vec::<Contour2>::with_capacity(self.sci.shp[&si].len());
+      for pts in &self.sci.shp[&si] {
+        let mut contour = Vec::<Pt>::with_capacity(pts.len());
+        for p in pts {
+          contour.push(Pt{ // add offset before scale
+            x: ((ofs.x + p.x) * self.scale) as i32,
+            y: ((ofs.y + p.y) * self.scale) as i32});
+        }
+        cts.push(contour);
       }
-      contours.push(contour);
-    }
+      cts
+    });
     Ok(contours.len() as i32)
   }
 
-  /// get_all_scaled
-  pub fn get_all_scaled(&mut self) -> Result<i32, Box<dyn Error>> {
+  /// whole_scaled
+  pub fn whole_scaled(&mut self) -> Result<i32, Box<dyn Error>> {
     let mut total = 0i32;
     let offset = shape::Pt2d{x: 0.0, y: 0.0};
     for i in 0..self.grp_contours.len() { // borrow '&si in &self.grp_contours'

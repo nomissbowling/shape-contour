@@ -1,4 +1,4 @@
-#![doc(html_root_url = "https://docs.rs/shape-contour/0.2.1")]
+#![doc(html_root_url = "https://docs.rs/shape-contour/0.2.2")]
 //! Rust crate shape-contour supports ESRI J shapefile (C bindings)
 //!
 //! # Requirements
@@ -37,14 +37,14 @@ mod tests {
     let u = s.to_str().unwrap(); // to keep lifetime
     let shp = shape::ShapeF::new(u, "cp932").unwrap();
     shp.disp_record_inf().unwrap();
-    let sci = shp.get_shp_contours().unwrap();
+    let sci = shp.get_shp_contours(false).unwrap();
     drop(shp);
     let mut gci = contours::GrpContoursInf::new(sci).unwrap();
     gci.grp_contours.clear();
-    gci.get_grp_contours(26, 343).unwrap();
+    gci.get_grp_contours(50.0, 26, 343, false).unwrap(); // 50.0 (1600, 1200)
     println!("n_grp_contours: {}", gci.grp_contours.len());
     gci.grp_contours.clear();
-    gci.get_grp_contours(0, 0).unwrap(); // 1-47, 0
+    gci.get_grp_contours(50.0, 0, 0, false).unwrap(); // 1-47, 0
     println!("n_grp_contours: {}", gci.grp_contours.len());
   }
 }
